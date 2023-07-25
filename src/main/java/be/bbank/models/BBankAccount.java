@@ -31,7 +31,7 @@ public class BBankAccount {
     @Setter
     @ManyToMany
     @JoinTable(
-        name = "BTitular",
+        name = "temp_titular",
         joinColumns = @JoinColumn(name = "account_id"), // FK column for BBankAccount
         inverseJoinColumns = @JoinColumn(name = "titular_id") // FK column for BTitular
     )
@@ -40,7 +40,7 @@ public class BBankAccount {
     @Setter
     @ManyToMany
     @JoinTable(
-        name = "BTransaction",
+        name = "temp_transaction",
         joinColumns = @JoinColumn(name = "transaction_id"), // FK column for BBankAccount
         inverseJoinColumns = @JoinColumn(name = "titular_id") // FK column for BTitular
     )

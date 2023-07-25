@@ -17,7 +17,7 @@ import lombok.Setter;
 
 @Entity
 public class BTransaction {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     @Getter
     private int id;
 

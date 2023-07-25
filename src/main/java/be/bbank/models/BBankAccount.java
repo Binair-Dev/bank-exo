@@ -21,7 +21,7 @@ import lombok.Setter;
 @Entity
 public class BBankAccount {
     @Getter
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Column(name = "bank_account", length = 19, nullable = false)

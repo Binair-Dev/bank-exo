@@ -19,7 +19,7 @@ import lombok.Setter;
 @Entity
 public class BTitular {
     
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Column(name = "first_name", length = 50,nullable = false)

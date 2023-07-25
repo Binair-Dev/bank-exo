@@ -10,7 +10,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 import be.bbank.BBankUtils;
 import lombok.Getter;
@@ -26,15 +28,22 @@ public class BBankAccount {
     @Getter
     private String bankAccount;
 
-    @ManyToOne
-    @Getter @Setter
-    private BTitular titular;
-
     @Setter
+    @ManyToMany
+    @JoinTable(
+        name = "BTitular",
+        joinColumns = @JoinColumn(name = "account_id"), // FK column for BBankAccount
+        inverseJoinColumns = @JoinColumn(name = "titular_id") // FK column for BTitular
+    )
     private List<BTitular> titulars;
 
     @Setter
-    @Column(name = "transactions", nullable = false)
+    @ManyToMany
+    @JoinTable(
+        name = "BTransaction",
+        joinColumns = @JoinColumn(name = "transaction_id"), // FK column for BBankAccount
+        inverseJoinColumns = @JoinColumn(name = "titular_id") // FK column for BTitular
+    )
     private List<BTransaction> transactions;
 
     private double balance;
@@ -60,11 +69,11 @@ public class BBankAccount {
         }
     }
 
-    public void setBalance(double balance) throws Exception {
-        if(this.titular == null) {
+    public void setBalance(BTitular btitular, double balance) throws Exception {
+        if(this.titulars == null) {
             throw new Exception("Il n'y a aucun titulaire pour ce compte, donc le compte est temporairement gelé!", null);
         } else {
-            Date birthDate = this.titular.getBirthDate();
+            Date birthDate = btitular.getBirthDate();
             if(balance >= 0) {
                 this.balance = balance;
             } else {
@@ -93,11 +102,11 @@ public class BBankAccount {
         }
     }
 
-    public double getAvaillableBalance() throws Exception {
-        if(this.titular == null) {
+    public double getAvaillableBalance(BTitular btitular) throws Exception {
+        if(btitular == null) {
             throw new Exception("Il n'y a aucun titulaire pour ce compte, donc le compte est temporairement gelé!", null);
         } else {
-            Date birthDate = this.titular.getBirthDate();
+            Date birthDate = btitular.getBirthDate();
             if(this.accountType == EnumAccountType.EPARGNE) {
                 return balance;
             } else {
@@ -114,9 +123,9 @@ public class BBankAccount {
         }
     }
 
-    public double removeMoney(double amount) throws Exception {
+    public double removeMoney(BTitular btitular, double amount) throws Exception {
         if(this.accountType == EnumAccountType.COURANT) {
-            if(amount <= getAvaillableBalance()) {
+            if(amount <= getAvaillableBalance(btitular)) {
                 this.balance -= amount;
                 return amount;
             }
@@ -149,16 +158,27 @@ public class BBankAccount {
         this.titulars.remove(titular);
     }
 
-    public void sendToAccount(BBankAccount account, double amount) throws Exception {
-        if(this.titular == null) {
+    public void sendToAccount(BTitular btitular, BBankAccount account, double amount) throws Exception {
+        if(btitular == null) {
             throw new Exception("Il n'y a aucun titulaire pour ce compte, donc le compte est temporairement gelé!", null);
         } else {
             if(this.accountType == EnumAccountType.COURANT) {
-                if(amount <= getAvaillableBalance()) {
+                if(amount <= getAvaillableBalance(btitular)) {
                     this.balance -= amount;
                     Date currentDate = new Date();
-                    account.addTransactions(new BTransaction(this, account, amount, currentDate));
-                    this.addTransactions(new BTransaction(account, this, amount, currentDate));
+
+                    BTransaction transaction = new BTransaction();
+                    try {
+                        transaction.addBankAccount(this);
+                        transaction.addBankAccount(account);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    transaction.setDate(currentDate);
+                    transaction.setAmount(amount);
+
+                    this.addTransactions(transaction);
+                    account.addTransactions(transaction);
                 } else {
                     throw new Exception("Vous n'avez pas assez d'argent dans votre compte!", null);
                 }

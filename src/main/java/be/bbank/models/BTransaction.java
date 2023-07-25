@@ -1,14 +1,14 @@
 package be.bbank.models;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -20,29 +20,24 @@ public class BTransaction {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
     private int id;
-    
-    @ManyToOne
-    @JoinColumn(name = "from_account")
-    @Getter
-    private BBankAccount from;
-    
-    @ManyToOne
-    @JoinColumn(name = "to_account")
-    @Getter
-    private BBankAccount to;
 
     @Getter @Setter
     private double amount;
+
+    @ManyToMany(mappedBy = "transactions")
+    private List<BBankAccount> bankAccounts;
 
     @Getter @Setter
     @Temporal(TemporalType.DATE)
     @Column(name = "transaction_date", nullable = false)
     private Date date;
 
-    public BTransaction(BBankAccount from, BBankAccount to, double amount, Date date) {
-        this.from = from;
-        this.to = to;
-        this.amount = amount;
-        this.date = date;
+    
+    public BTransaction() {}
+
+    public void addBankAccount(BBankAccount account) throws Exception {
+        if(account != null)
+            this.bankAccounts.add(account);
+        else throw new Exception("Le compte spécifié n'existe pas ou est null!", null);
     }
 }

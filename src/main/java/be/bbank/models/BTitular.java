@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -34,6 +35,7 @@ public class BTitular {
     private Date birthDate;
 
     @Getter @Setter
+    @ManyToMany(mappedBy = "titulars")
     private List<BBankAccount> accounts;
 
     public BTitular() {

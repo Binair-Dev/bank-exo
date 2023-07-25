@@ -4,22 +4,16 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
+import be.bbank.BBankUtils;
 import be.bbank.dao.BTransactionDao;
 import be.bbank.models.BTransaction;
 
 
 public class BTransactionDAOImpl implements BTransactionDao {
 
-    private final EntityManager em = Persistence.createEntityManagerFactory("bbank").createEntityManager();
-
-
-    @Override
-    public EntityManager getEm() {
-        return em;
-    }
+    private final EntityManager em = BBankUtils.getEm();
 
     @Override
     public void create(BTransaction entity) {

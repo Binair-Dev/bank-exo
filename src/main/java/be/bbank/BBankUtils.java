@@ -3,7 +3,13 @@ package be.bbank;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
+
 public class BBankUtils {
+
+    private static final EntityManager em = Persistence.createEntityManagerFactory("bbank").createEntityManager();
+
     public static int calculateDifferenceInYears(Date date1, Date date2) {
         Calendar cal1 = Calendar.getInstance();
         cal1.setTime(date1);
@@ -20,5 +26,9 @@ public class BBankUtils {
         }
 
         return yearDiff;
+    }
+
+    public static EntityManager getEm() {
+        return em;
     }
 }

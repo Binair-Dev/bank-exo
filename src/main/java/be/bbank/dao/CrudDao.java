@@ -3,12 +3,7 @@ package be.bbank.dao;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-
 public interface CrudDao<TENTITY, TID> {
-
-    EntityManager getEm();
-
     // Create
     void create(TENTITY entity);
 
